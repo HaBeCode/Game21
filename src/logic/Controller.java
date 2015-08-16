@@ -40,16 +40,16 @@ public class Controller {
 		player = pPlayer;
 	}
 	
+	//do-to: more
 	public void submit(Card p1, Card p2, Card p3){
-		if (p1.getValue() + p2.getValue() + p3.getValue() == 21){
-			submitted[cSubmitted] = p1;
-			submitted[cSubmitted + 1] = p2;
-			submitted[cSubmitted + 2] = p3;
-			cSubmitted = cSubmitted + 3;
-		} else {
+		submitted[cSubmitted] = p1;
+		submitted[cSubmitted + 1] = p2;
+		submitted[cSubmitted + 2] = p3;
+		cSubmitted = cSubmitted + 3;
+		int tmpCounter = 0;
+		while (tmpCounter != 3) {
+			//do more
 		}
-		
-		//remove Cards
 	}
 	
 	public Card[][] getFields(){
