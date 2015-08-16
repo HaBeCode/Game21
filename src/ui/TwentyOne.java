@@ -35,6 +35,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private JMenu menu;
 	private JMenuItem newGame;
 	private JMenuItem closeGame;
+	private Image background;
 
 	private JLabel lcounter;
 	private JLabel lplayer;
@@ -62,7 +63,14 @@ public class TwentyOne extends JFrame implements ActionListener{
 		frame = new JFrame("Game 21");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
-		play = new JPanel(new GridBagLayout());
+		background = new ImageIcon("image/green-background.jpg").getImage();
+		play = new JPanel(new GridBagLayout()) {
+			@Override
+			  protected void paintComponent(Graphics g) {
+			    super.paintComponent(g);
+			        g.drawImage(background, 0, 0, null);
+			}
+		};
 		
 		menuBar = new JMenuBar();
 		menu = new JMenu("Menu");
@@ -95,10 +103,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		frame.add(play, BorderLayout.CENTER);
 		
 		frame.setJMenuBar(menuBar);
-		frame.pack();
-		if (frame.getWidth() < 600) {
-			frame.setSize(new Dimension(600, frame.getHeight()));
-		}
+		frame.setSize(new Dimension(1273, 644));
 		frame.setResizable(false);
 		frame.setVisible(true);
 		
@@ -141,12 +146,10 @@ public class TwentyOne extends JFrame implements ActionListener{
 			bDraw.setEnabled(true);
 		}
 		else if (ae.getSource() == this.closeGame) {
+			System.out.println(frame.getWidth());
 			System.exit(0);
 		}
 		drawField();
-		if (cFieldPicture >= 4) {
-			frame.pack();
-		}
 		frame.repaint();
 	}
 	
@@ -274,6 +277,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 		
 		JLabel lcomputer = new JLabel("Player 1");
 		lplayer = new JLabel(pPlayer);
+		lcomputer.setForeground(Color.WHITE);
+		lplayer.setForeground(Color.WHITE);
 		
         play.add(lcomputer, c);
         c.gridy++;
