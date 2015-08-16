@@ -1,9 +1,7 @@
 package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -12,15 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 
 import data.Card;
 import logic.Controller;
@@ -42,7 +35,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private JLabel[] lPicture;
 	private int cPicture;
 	private int cFieldPicture;
-	private int[] value;
+	private int cValue;
+	private Card[] value;
 	private JButton bFinish;
 	private JButton bDraw;
 	private JButton bSubmit;
@@ -53,13 +47,12 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private Card[][] field;
 
 	public static void main(String[] args){
-		
-		mycontroller = new Controller();
 		new TwentyOne();
 	}
 	
 	public TwentyOne() {
 		
+		mycontroller = new Controller();
 		frame = new JFrame("Game 21");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
@@ -71,6 +64,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 			        g.drawImage(background, 0, 0, null);
 			}
 		};
+		control = new JPanel(new GridBagLayout());
 		
 		menuBar = new JMenuBar();
 		menu = new JMenu("Menu");
@@ -96,10 +90,10 @@ public class TwentyOne extends JFrame implements ActionListener{
 		bFinish.addActionListener(this);
 		bEnd.addActionListener(this);
 
-		drawControl();
+		paintControl();
 		
 		frame.add(control, BorderLayout.WEST);
-		drawPlay("Player 2");
+		paintPlay("Player 2");
 		frame.add(play, BorderLayout.CENTER);
 		
 		frame.setJMenuBar(menuBar);
@@ -111,7 +105,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 		lPicture = new JLabel[52];
 		cPicture = 0;
 		cFieldPicture = 0;
+		cValue = 0;
 		border = BorderFactory.createLineBorder(Color.blue, 2);
+		value = new Card[3];
 	}
 	
 	public void actionPerformed (ActionEvent ae){
@@ -126,7 +122,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 			bDraw.setEnabled(true);
 		}
 		else if (ae.getSource() == this.bSubmit) {
-			//do something
+			submit();
+			bSubmit.setEnabled(false);
 		}
 		else if (ae.getSource() == this.bFinish) {
 			JOptionPane.showMessageDialog(frame, "Thank you very much. Your results will be saved.");
@@ -146,7 +143,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 			bDraw.setEnabled(true);
 		}
 		else if (ae.getSource() == this.closeGame) {
-			System.out.println(frame.getWidth());
 			System.exit(0);
 		}
 		drawField();
@@ -169,21 +165,27 @@ public class TwentyOne extends JFrame implements ActionListener{
 		cPicture = 0;
 		cFieldPicture = 0;
 		field = mycontroller.getFields();
-		drawPlay(mycontroller.getPlayer());
-		drawPlayerCards(0,0);
+		paintPlay(mycontroller.getPlayer());
+		paintPlayerCards(0,0);
 		cFieldPicture = 0;
-		drawPlayerCards(1,2);
+		paintPlayerCards(1,2);
 		play.validate();
 		play.repaint();
 	}
 	
-	private void drawPlayerCards(final int pPlayer, int pY){
+	private void paintPlayerCards(final int pPlayer, int pY){
 		GridBagConstraints c = new GridBagConstraints();
-		int x = 0;
 		
 		c.gridx = 2;
 		c.gridy = pY;
-		while (field[pPlayer][x] != null) {
+		for (int x = 0; x < 26; x++) {
+			if (field[pPlayer][x] == null) {
+				if (field[pPlayer][x+1] == null && field[pPlayer][x+2] == null && field[pPlayer][x+3] == null) {
+					break;
+				} else {
+					continue;
+				}
+			}
 			final int tmpX = x;
 			lPicture[cPicture] = new JLabel(field[pPlayer][x].getPicture());
 			if (cFieldPicture == 10) {
@@ -195,25 +197,52 @@ public class TwentyOne extends JFrame implements ActionListener{
 					public void mouseClicked(MouseEvent me){
 						JLabel tmp = (JLabel) me.getSource();
 						if (tmp.getBorder() == null){
-							tmp.setBorder(border);
-							selectPicture(pPlayer, tmpX);
+							if (cValue <= 2 ) {
+								tmp.setBorder(border);
+								selectPicture(pPlayer, tmpX);
+								System.out.println(field[pPlayer][tmpX].getValue());
+								if (cValue == 2) {
+									bSubmit.setEnabled(true);
+								}
+							}
 						} else {
+							deselectPicture(pPlayer, tmpX);
 							tmp.setBorder(null);
+							bSubmit.setEnabled(false);
 						}
 			}
 			});
 			c.gridx++;
-			x++;
 			cPicture++;
 			cFieldPicture++;
 		}
 	}
 	
 	private void selectPicture(final int pPlayer, final int pX){
-		System.out.println(field[pPlayer][pX].getValue());
+		value[cValue] = field[pPlayer][pX];
+		cValue++;	
+	}
+	
+	private void deselectPicture(final int pPlayer, final int pX) {
+		for (int i = 0; i< 2; i++) {
+			if (value[i] != null) {
+				if (value[i].equals(field[pPlayer][pX])) {
+					value[i] = null;
+				}
+			}
+		}
+		cValue--;
 	}
 	
 	public void submit(){
+		int tmpValue = value[0].getValue() + value[1].getValue() + value[2].getValue();
+		if (tmpValue == 21) {
+			mycontroller.submit(value[0], value[1], value[2]);
+			cValue = 0;
+			//add money too person.
+		} else {
+			JOptionPane.showMessageDialog(frame, "You only reached " + tmpValue + " points instead of 21.");
+		}
 	}
 	
 	public void finish(){
@@ -230,15 +259,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		mycontroller.startKI();
 	}
 	
-	public ImageIcon getCard(){
-		ImageIcon iCardBack = new ImageIcon("image/back.png");
-		Image cards = iCardBack.getImage();
-		cards = cards.getScaledInstance(100, 120, java.awt.Image.SCALE_SMOOTH);
-		return new ImageIcon(cards);
-	}
-	
-	private void drawControl(){
-		control = new JPanel(new GridBagLayout());
+	private void paintControl(){
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
@@ -269,7 +290,7 @@ public class TwentyOne extends JFrame implements ActionListener{
         control.add(bFinish, c);
 	}
 
-	private void drawPlay(String pPlayer) {
+	private void paintPlay(String pPlayer) {
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -294,5 +315,12 @@ public class TwentyOne extends JFrame implements ActionListener{
         play.add(new JLabel(" "), c);
         c.gridy++;
         play.add(new JLabel(" "), c);
+	}
+
+	private ImageIcon getCard(){
+		ImageIcon iCardBack = new ImageIcon("image/back.png");
+		Image cards = iCardBack.getImage();
+		cards = cards.getScaledInstance(100, 120, java.awt.Image.SCALE_SMOOTH);
+		return new ImageIcon(cards);
 	}
 }
