@@ -10,6 +10,9 @@ public class Controller {
 	private String player;
 	private int turn = 0;
 	private int cSubmitted;
+	private Card c1;
+	private Card c2;
+	private Card c3;
 	
 	public void draw(){			
 		turn++;
@@ -40,15 +43,28 @@ public class Controller {
 		player = pPlayer;
 	}
 	
-	//do-to: more
-	public void submit(Card p1, Card p2, Card p3){
+	//do-to: which card was stolen
+	public void submit(Card p1, Card p2, Card p3, int numberPC){
 		submitted[cSubmitted] = p1;
 		submitted[cSubmitted + 1] = p2;
 		submitted[cSubmitted + 2] = p3;
 		cSubmitted = cSubmitted + 3;
+
+		deleteCard(p1,p2,p3, numberPC, 0);
+		deleteCard(p1,p2,p3, 3 - numberPC, 1);
+	}
+	
+	private void deleteCard(Card p1, Card p2, Card p3, int pCounter, int pPlayer) {
 		int tmpCounter = 0;
-		while (tmpCounter != 3) {
-			//do more
+		int x = 0;
+		while (tmpCounter != pCounter) {
+			if (fieldDeck[pPlayer][x] != null) {
+				if (fieldDeck[pPlayer][x].equals(p1) || fieldDeck[pPlayer][x].equals(p2) || fieldDeck[pPlayer][x].equals(p3)) {
+					fieldDeck[pPlayer][x] = null;
+					tmpCounter++;
+				}
+			}
+			x++;
 		}
 	}
 	
@@ -68,7 +84,10 @@ public class Controller {
 	public void startKI(){
 		
 		if (calculate()){
-			//remove Cards from areaDeck
+			deleteCard(c1, c2, c3, 3, 0);
+			c1 = null;
+			c2 = null;
+			c3 = null;
 		}
 		
 	}
@@ -79,6 +98,9 @@ public class Controller {
 		submitted = new Card[52];
 		fieldDeck = new Card[2][26];
 		cSubmitted = 0;
+		c1 = null;
+		c2 = null;
+		c3 = null;
 		
 		ImageIcon tmp = new ImageIcon("image/ace.png");
 		
