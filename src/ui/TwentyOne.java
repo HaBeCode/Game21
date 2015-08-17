@@ -157,6 +157,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 			lplayer.setText(mycontroller.getPlayer());
 			drawCard();
 			bDraw.setEnabled(true);
+			paintControl();
 		}
 		else if (ae.getSource() == this.closeGame) {
 			System.exit(0);
@@ -358,9 +359,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 	}
 
 	private ImageIcon getCard(){
-		ImageIcon iCardBack = new ImageIcon("image/back.png");
+		ImageIcon iCardBack = new ImageIcon("image/back.jpg");
 		Image cards = iCardBack.getImage();
-		cards = cards.getScaledInstance(100, 120, java.awt.Image.SCALE_SMOOTH);
+		cards = cards.getScaledInstance(100, 140, java.awt.Image.SCALE_SMOOTH);
 		return new ImageIcon(cards);
 	}
 }
