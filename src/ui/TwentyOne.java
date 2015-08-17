@@ -32,10 +32,13 @@ public class TwentyOne extends JFrame implements ActionListener{
 
 	private JLabel lcounter;
 	private JLabel lplayer;
+	private JLabel lmoney;
 	private JLabel[] lPicture;
+	private double money;
 	private int cPicture;
 	private int cFieldPicture;
 	private int cValue;
+	private int cSteal;
 	private Card[] value;
 	private JButton bFinish;
 	private JButton bDraw;
@@ -77,6 +80,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		menuBar.add(menu);
 		
 		lcounter = new JLabel("");
+		lmoney = new JLabel("");
 		bDraw = new JButton("Draw");
 		bSubmit = new JButton("Submit");
 		bFinish = new JButton("Finish");
@@ -97,7 +101,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		frame.add(play, BorderLayout.CENTER);
 		
 		frame.setJMenuBar(menuBar);
-		frame.setSize(new Dimension(1273, 644));
+		frame.setSize(new Dimension(1275, 645));
 		frame.setResizable(false);
 		frame.setVisible(true);
 		
@@ -106,6 +110,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 		cPicture = 0;
 		cFieldPicture = 0;
 		cValue = 0;
+		cSteal = 0;
+		money = 0.0;
 		border = BorderFactory.createLineBorder(Color.blue, 2);
 		value = new Card[3];
 	}
@@ -115,15 +121,20 @@ public class TwentyOne extends JFrame implements ActionListener{
 			drawCard();
 			bEnd.setEnabled(true);
 			bDraw.setEnabled(false);
+			clearSelection();
 		}
 		else if (ae.getSource() == this.bEnd){
 			endTurn();
 			bEnd.setEnabled(false);
 			bDraw.setEnabled(true);
+			clearSelection();
 		}
 		else if (ae.getSource() == this.bSubmit) {
 			submit();
 			bSubmit.setEnabled(false);
+			clearSelection();
+			control.removeAll();
+			paintControl();
 		}
 		else if (ae.getSource() == this.bFinish) {
 			JOptionPane.showMessageDialog(frame, "Thank you very much. Your results will be saved.");
@@ -145,7 +156,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		else if (ae.getSource() == this.closeGame) {
 			System.exit(0);
 		}
-		drawField();
+		paintField();
 		frame.repaint();
 	}
 	
@@ -158,19 +169,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 			return;
 		}
 		mycontroller.draw();
-	}
-	
-	public void drawField(){
-		play.removeAll();
-		cPicture = 0;
-		cFieldPicture = 0;
-		field = mycontroller.getFields();
-		paintPlay(mycontroller.getPlayer());
-		paintPlayerCards(0,0);
-		cFieldPicture = 0;
-		paintPlayerCards(1,2);
-		play.validate();
-		play.repaint();
 	}
 	
 	private void paintPlayerCards(final int pPlayer, int pY){
@@ -201,7 +199,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 								tmp.setBorder(border);
 								selectPicture(pPlayer, tmpX);
 								System.out.println(field[pPlayer][tmpX].getValue());
-								if (cValue == 2) {
+								if (cValue == 3) {
 									bSubmit.setEnabled(true);
 								}
 							}
@@ -220,7 +218,10 @@ public class TwentyOne extends JFrame implements ActionListener{
 	
 	private void selectPicture(final int pPlayer, final int pX){
 		value[cValue] = field[pPlayer][pX];
-		cValue++;	
+		cValue++;
+		if (pPlayer==0) {
+			cSteal++;
+		}
 	}
 	
 	private void deselectPicture(final int pPlayer, final int pX) {
@@ -232,14 +233,28 @@ public class TwentyOne extends JFrame implements ActionListener{
 			}
 		}
 		cValue--;
+		if (pPlayer == 0) {
+			cSteal--;
+		}
+	}
+	
+	private void clearSelection() {
+		cValue = 0;
+		cSteal = 0;
+		value[0] = null;
+		value[1] = null;
+		value[2] = null;
 	}
 	
 	public void submit(){
 		int tmpValue = value[0].getValue() + value[1].getValue() + value[2].getValue();
 		if (tmpValue == 21) {
-			mycontroller.submit(value[0], value[1], value[2]);
-			cValue = 0;
-			//add money too person.
+			if (cSteal == 0) {
+				money = money + 1.0;
+			} else {
+				money = money + 0.5;
+			}
+			mycontroller.submit(value[0], value[1], value[2], cSteal);
 		} else {
 			JOptionPane.showMessageDialog(frame, "You only reached " + tmpValue + " points instead of 21.");
 		}
@@ -259,11 +274,25 @@ public class TwentyOne extends JFrame implements ActionListener{
 		mycontroller.startKI();
 	}
 	
+	public void paintField(){
+		play.removeAll();
+		cPicture = 0;
+		cFieldPicture = 0;
+		field = mycontroller.getFields();
+		paintPlay(mycontroller.getPlayer());
+		paintPlayerCards(0,0);
+		cFieldPicture = 0;
+		paintPlayerCards(1,2);
+		play.validate();
+		play.repaint();
+	}
+	
 	private void paintControl(){
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		lcounter.setText("Cards left: 52");
+		lcounter.setText("Cards left: " + (52 - (mycontroller.getTurn() + 1)));
+		lmoney.setText("Cash: " + money + "$");
 
         control.add(new JLabel(getCard()),c);
         c.gridy++;
@@ -282,6 +311,8 @@ public class TwentyOne extends JFrame implements ActionListener{
         control.add(bSubmit, c);
         c.gridy++;
         control.add(new JLabel(" "), c);
+        c.gridy++;
+        control.add(lmoney, c);
         c.gridy++;
         control.add(new JLabel(" "), c);
         c.gridy++;
