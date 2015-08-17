@@ -184,11 +184,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		c.gridy = pY;
 		for (int x = 0; x < 26; x++) {
 			if (field[pPlayer][x] == null) {
-				if (field[pPlayer][x+1] == null && field[pPlayer][x+2] == null && field[pPlayer][x+3] == null) {
-					break;
-				} else {
-					continue;
-				}
+				continue;
 			}
 			final int tmpX = x;
 			lPicture[cPicture] = new JLabel(field[pPlayer][x].getPicture());
