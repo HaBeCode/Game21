@@ -1,7 +1,7 @@
 package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -33,6 +33,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private JLabel lcounter;
 	private JLabel lplayer;
 	private JLabel lmoney;
+	private JLabel lDeck;
 	private JLabel[] lPicture;
 	private double money;
 	private int cPicture;
@@ -44,7 +45,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private JButton bDraw;
 	private JButton bSubmit;
 	private JButton bEnd;
-	private Border border;
+	private Border sborder;
+	private Border uborder;
 	
 	private static Controller mycontroller;
 	private Card[][] field;
@@ -59,7 +61,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		frame = new JFrame("Game 21");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
-		background = new ImageIcon("image/green-background.jpg").getImage();
+		background = new ImageIcon("image/grey-background.jpg").getImage();
 		play = new JPanel(new GridBagLayout()) {
 			@Override
 			  protected void paintComponent(Graphics g) {
@@ -81,6 +83,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		
 		lcounter = new JLabel("");
 		lmoney = new JLabel("");
+		lDeck = new JLabel(getCard());
 		bDraw = new JButton("Draw");
 		bSubmit = new JButton("Submit");
 		bFinish = new JButton("Finish");
@@ -101,8 +104,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 		frame.add(play, BorderLayout.CENTER);
 		
 		frame.setJMenuBar(menuBar);
-		frame.setSize(new Dimension(1275, 645));
-		frame.setResizable(false);
+		//frame.setSize(new Dimension(1275, 645));
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		//frame.setResizable(false);
 		frame.setVisible(true);
 		
 		field = new Card[2][26];
@@ -112,7 +116,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 		cValue = 0;
 		cSteal = 0;
 		money = 0.0;
-		border = BorderFactory.createLineBorder(Color.blue, 2);
+		sborder = BorderFactory.createLineBorder(Color.blue, 2);
+		uborder = BorderFactory.createLineBorder(Color.gray, 1);
 		value = new Card[3];
 	}
 	
@@ -162,7 +167,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 	
 	public void drawCard(){
 		int tmpTurn = mycontroller.getTurn();
-		lcounter.setText("Cards left: " + (52 - (tmpTurn + 1)));
+		lcounter.setText("Cards left: " + (52 - tmpTurn));
 		if (tmpTurn == 51) {
 			bFinish.setEnabled(true);
 			bDraw.setEnabled(false);
@@ -186,6 +191,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 			}
 			final int tmpX = x;
 			lPicture[cPicture] = new JLabel(field[pPlayer][x].getPicture());
+			lPicture[cPicture].setBorder(uborder);
 			if (cFieldPicture == 10) {
 				c.gridy = pY + 1;
 				c.gridx = 2;
@@ -194,9 +200,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 			lPicture[cPicture].addMouseListener(new MouseAdapter()	{
 					public void mouseClicked(MouseEvent me){
 						JLabel tmp = (JLabel) me.getSource();
-						if (tmp.getBorder() == null){
+						if (tmp.getBorder() == uborder){
 							if (cValue <= 2 ) {
-								tmp.setBorder(border);
+								tmp.setBorder(sborder);
 								selectPicture(pPlayer, tmpX);
 								System.out.println(field[pPlayer][tmpX].getValue());
 								if (cValue == 3) {
@@ -205,7 +211,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 							}
 						} else {
 							deselectPicture(pPlayer, tmpX);
-							tmp.setBorder(null);
+							tmp.setBorder(uborder);
 							bSubmit.setEnabled(false);
 						}
 			}
@@ -291,10 +297,11 @@ public class TwentyOne extends JFrame implements ActionListener{
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		lcounter.setText("Cards left: " + (52 - (mycontroller.getTurn() + 1)));
+		lcounter.setText("Cards left: " + (52 - mycontroller.getTurn()));
 		lmoney.setText("Cash: " + money + "$");
+		
 
-        control.add(new JLabel(getCard()),c);
+        control.add(lDeck);
         c.gridy++;
         control.add(lcounter,c);
         c.gridy++;
@@ -331,6 +338,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 		lplayer = new JLabel(pPlayer);
 		lcomputer.setForeground(Color.WHITE);
 		lplayer.setForeground(Color.WHITE);
+		lcomputer.setFont(new Font("Arial", Font.PLAIN, 20));
+		lplayer.setFont(new Font("Arial", Font.PLAIN, 20));
 		
         play.add(lcomputer, c);
         c.gridy++;
