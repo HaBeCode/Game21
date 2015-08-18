@@ -117,7 +117,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		cSteal = 0;
 		money = 0.0;
 		sborder = BorderFactory.createLineBorder(Color.blue, 2);
-		uborder = BorderFactory.createLineBorder(Color.gray, 1);
+		uborder = BorderFactory.createLineBorder(Color.gray, 2);
 		value = new Card[3];
 	}
 	
@@ -201,7 +201,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 							if (cValue <= 2 ) {
 								tmp.setBorder(sborder);
 								selectPicture(pPlayer, tmpX);
-								System.out.println(field[pPlayer][tmpX].getValue());
 								if (cValue == 3) {
 									bSubmit.setEnabled(true);
 								}
