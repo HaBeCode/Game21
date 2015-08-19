@@ -61,7 +61,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		frame = new JFrame("Game 21");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
-		background = new ImageIcon("image/grey-background.jpg").getImage();
+		background = new ImageIcon(Card.class.getClassLoader().getResource("image/grey-background.jpg")).getImage();
 		play = new JPanel(new GridBagLayout()) {
 			@Override
 			  protected void paintComponent(Graphics g) {
@@ -354,7 +354,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 	}
 
 	private ImageIcon getCard(){
-		ImageIcon iCardBack = new ImageIcon("image/back.jpg");
+		ImageIcon iCardBack = new ImageIcon(Card.class.getClassLoader().getResource("image/back.jpg"));
 		Image cards = iCardBack.getImage();
 		cards = cards.getScaledInstance(100, 140, java.awt.Image.SCALE_SMOOTH);
 		return new ImageIcon(cards);

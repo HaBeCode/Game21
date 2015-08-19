@@ -1,4 +1,6 @@
 package logic;
+import java.net.URL;
+
 import javax.swing.ImageIcon;
 import data.Card;
 
@@ -102,19 +104,19 @@ public class Controller {
 		c2 = null;
 		c3 = null;
 		
-		ImageIcon i1 = new ImageIcon("image/1.jpg");
-		ImageIcon i2 = new ImageIcon("image/2.jpg");
-		ImageIcon i3 = new ImageIcon("image/3.jpg");
-		ImageIcon i4 = new ImageIcon("image/4.jpg");
-		ImageIcon i5 = new ImageIcon("image/5.jpg");
-		ImageIcon i6 = new ImageIcon("image/6.jpg");
-		ImageIcon i7 = new ImageIcon("image/7.jpg");
-		ImageIcon i8 = new ImageIcon("image/8.jpg");
-		ImageIcon i9 = new ImageIcon("image/9.jpg");
-		ImageIcon i10 = new ImageIcon("image/10.jpg");
-		ImageIcon ij = new ImageIcon("image/j.jpg");
-		ImageIcon iq = new ImageIcon("image/q.jpg");
-		ImageIcon ik = new ImageIcon("image/k.jpg");
+		ImageIcon i1 = new ImageIcon(Card.class.getClassLoader().getResource("image/1.jpg"));
+		ImageIcon i2 = new ImageIcon(Card.class.getClassLoader().getResource("image/2.jpg"));
+		ImageIcon i3 = new ImageIcon(Card.class.getClassLoader().getResource("image/3.jpg"));
+		ImageIcon i4 = new ImageIcon(Card.class.getClassLoader().getResource("image/4.jpg"));
+		ImageIcon i5 = new ImageIcon(Card.class.getClassLoader().getResource("image/5.jpg"));
+		ImageIcon i6 = new ImageIcon(Card.class.getClassLoader().getResource("image/6.jpg"));
+		ImageIcon i7 = new ImageIcon(Card.class.getClassLoader().getResource("image/7.jpg"));
+		ImageIcon i8 = new ImageIcon(Card.class.getClassLoader().getResource("image/8.jpg"));
+		ImageIcon i9 = new ImageIcon(Card.class.getClassLoader().getResource("image/9.jpg"));
+		ImageIcon i10 = new ImageIcon(Card.class.getClassLoader().getResource("image/10.jpg"));
+		ImageIcon ij = new ImageIcon(Card.class.getClassLoader().getResource("image/j.jpg"));
+		ImageIcon iq = new ImageIcon(Card.class.getClassLoader().getResource("image/q.jpg"));
+		ImageIcon ik = new ImageIcon(Card.class.getClassLoader().getResource("image/k.jpg"));
 		
 		mydeck[0] = new Card(7, i7);
 		mydeck[1] = new Card(1, i1);
