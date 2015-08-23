@@ -53,13 +53,14 @@ public class TwentyOne extends JFrame implements ActionListener{
 
 	public static void main(String[] args){
 		new TwentyOne();
+		initAdmin();
 	}
 	
 	public TwentyOne() {
 		
 		mycontroller = new Controller();
 		frame = new JFrame("Game 21");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 		background = new ImageIcon(Card.class.getClassLoader().getResource("image/grey-background.jpg")).getImage();
 		play = new JPanel(new GridBagLayout()) {
@@ -121,6 +122,26 @@ public class TwentyOne extends JFrame implements ActionListener{
 		value = new Card[3];
 	}
 	
+	private static void initAdmin () {
+		String tmp = "";
+		while (!mycontroller.enterPassword(tmp)) {
+			Box box = Box.createHorizontalBox();
+	
+			JLabel jl = new JLabel("Admin Password: ");
+			box.add(jl);
+	
+			JPasswordField jpf = new JPasswordField(24);
+			box.add(jpf);
+	
+			int button = JOptionPane.showConfirmDialog(null, box, "Enter your password", JOptionPane.OK_CANCEL_OPTION);
+	
+			if (button == JOptionPane.OK_OPTION) {
+			    char[] input = jpf.getPassword();
+			    tmp = new String(input);
+			}
+		}
+	}
+	
 	public void actionPerformed (ActionEvent ae){
 		if (ae.getSource() == this.bDraw) {
 			drawCard();
@@ -137,13 +158,14 @@ public class TwentyOne extends JFrame implements ActionListener{
 		else if (ae.getSource() == this.bSubmit) {
 			submit();
 			bSubmit.setEnabled(false);
-			clearSelection();
 			control.removeAll();
 			paintControl();
+			actionPerformed(new ActionEvent(this.bEnd, 1, "a"));
 		}
 		else if (ae.getSource() == this.bFinish) {
 			JOptionPane.showMessageDialog(frame, "Thank you very much. Your results will be saved.");
 			finish();
+			initAdmin();
 		}
 		else if (ae.getSource() == this.newGame) {
 			
@@ -284,7 +306,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		paintPlay(mycontroller.getPlayer());
 		paintPlayerCards(0,0);
 		cFieldPicture = 0;
-		paintPlayerCards(1,2);
+		paintPlayerCards(1,3);
 		play.validate();
 		play.repaint();
 	}
@@ -294,7 +316,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		c.gridx = 0;
 		c.gridy = 0;
 		lcounter.setText("Cards left: " + (52 - mycontroller.getTurn()));
-		lmoney.setText("Cash: " + money + "$");
+		lmoney.setText("Points: " + money);
 		
 
         control.add(lDeck);
@@ -338,6 +360,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 		lplayer.setFont(new Font("Arial", Font.PLAIN, 20));
 		
         play.add(lcomputer, c);
+        c.gridy++;
+        play.add(new JLabel(" "), c);
         c.gridy++;
         play.add(new JLabel(" "), c);
         c.gridy++;
