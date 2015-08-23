@@ -15,6 +15,7 @@ public class Controller {
 	private Card c1;
 	private Card c2;
 	private Card c3;
+	private final static String Pass = "SMU2015";
 	
 	public void draw(){			
 		int ti;
@@ -25,6 +26,13 @@ public class Controller {
 		}
 		addCard(ti, mydeck[turn]);
 		turn++;
+	}
+	
+	public boolean enterPassword(String pPass) {
+		if (Pass.equals(pPass)) {
+			return true;
+		}
+		return false;
 	}
 	
 	private void addCard(int pi, Card pCard){
@@ -52,8 +60,37 @@ public class Controller {
 		submitted[cSubmitted + 2] = p3;
 		cSubmitted = cSubmitted + 3;
 
-		deleteCard(p1,p2,p3, numberPC, 0);
+		if (numberPC != 0) {
+			updateComputerCards(p1 ,p2, p3, numberPC);
+		}
 		deleteCard(p1,p2,p3, 3 - numberPC, 1);
+		orderField(1);
+	}
+	
+	private void updateComputerCards(Card p1, Card p2, Card p3, int pNumber){
+		deleteCard(p1,p2,p3, pNumber, 0);
+		orderField(0);
+	}
+	
+	private void orderField(int pPlayer){
+		for (int i = 0; i < 26; i++) {
+			if (fieldDeck[pPlayer][i] == null) {
+				if (orderElement(pPlayer, i)) {
+					return;
+				}
+			}
+		}
+	}
+	
+	private boolean orderElement(int pPlayer, int pNew) {
+		for (int i = pNew; i < 26; i++) {
+			if (fieldDeck[pPlayer][i] != null) {
+				fieldDeck[pPlayer][pNew] = fieldDeck[pPlayer][i];
+				fieldDeck[pPlayer][i] = null;
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	private void deleteCard(Card p1, Card p2, Card p3, int pCounter, int pPlayer) {
