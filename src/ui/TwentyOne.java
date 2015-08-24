@@ -50,10 +50,12 @@ public class TwentyOne extends JFrame implements ActionListener{
 	
 	private static Controller mycontroller;
 	private Card[][] field;
+	private boolean drawed;
+	private boolean submitted;
 
 	public static void main(String[] args){
 		new TwentyOne();
-		initAdmin();
+		//initAdmin();
 	}
 	
 	public TwentyOne() {
@@ -117,6 +119,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 		cValue = 0;
 		cSteal = 0;
 		money = 0.0;
+		drawed = false;
+		submitted = false;
 		sborder = BorderFactory.createLineBorder(Color.blue, 2);
 		uborder = BorderFactory.createLineBorder(Color.gray, 2);
 		value = new Card[3];
@@ -148,19 +152,28 @@ public class TwentyOne extends JFrame implements ActionListener{
 			bEnd.setEnabled(true);
 			bDraw.setEnabled(false);
 			clearSelection();
+			drawed=true;
 		}
 		else if (ae.getSource() == this.bEnd){
 			endTurn();
+			drawed = false;
 			bEnd.setEnabled(false);
 			bDraw.setEnabled(true);
 			clearSelection();
 		}
 		else if (ae.getSource() == this.bSubmit) {
+			if (!drawed) {
+				return;
+			}
+			submitted = false;
 			submit();
-			bSubmit.setEnabled(false);
-			control.removeAll();
-			paintControl();
-			actionPerformed(new ActionEvent(this.bEnd, 1, "a"));
+			if (submitted) {
+				bSubmit.setEnabled(false);
+				control.removeAll();
+				actionPerformed(new ActionEvent(this.bEnd, 1, "a"));
+			} else {
+				clearSelection();
+			}
 		}
 		else if (ae.getSource() == this.bFinish) {
 			JOptionPane.showMessageDialog(frame, "Thank you very much. Your results will be saved.");
@@ -179,12 +192,12 @@ public class TwentyOne extends JFrame implements ActionListener{
 			lplayer.setText(mycontroller.getPlayer());
 			drawCard();
 			bDraw.setEnabled(true);
-			paintControl();
 		}
 		else if (ae.getSource() == this.closeGame) {
 			System.exit(0);
 		}
 		paintField();
+		paintControl();
 		frame.repaint();
 	}
 	
@@ -278,6 +291,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 			} else {
 				money = money + 0.5;
 			}
+			submitted = true;
 			mycontroller.submit(value[0], value[1], value[2], cSteal);
 		} else {
 			JOptionPane.showMessageDialog(frame, "You only reached " + tmpValue + " points instead of 21.");
