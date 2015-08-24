@@ -1,19 +1,18 @@
 package logic;
- 
+
 import javax.swing.ImageIcon;
 import data.Card;
  
 public class Controller {
        
         private Card[] mydeck;
-        private Card[] submitted;
+        private String[] submitted;
         private Card[][] fieldDeck;
         private String player;
         private int turn = 0;
+        private int cSubCard;
         private int cSubmitted;
-        private Card c1;
-        private Card c2;
-        private Card c3;
+        private Card[] stolenCard;
         private final static String Pass = "SMU2015";
        
         public void draw(){                    
@@ -54,16 +53,34 @@ public class Controller {
        
         //To-Do change how to save submitted Cards
         public void submit(Card p1, Card p2, Card p3, int numberPC){
-                submitted[cSubmitted] = p1;
-                submitted[cSubmitted + 1] = p2;
-                submitted[cSubmitted + 2] = p3;
-                cSubmitted = cSubmitted + 3;
+
+                stolenCard[0] = null;
+                stolenCard[1] = null;
+                stolenCard[2] = null;
+                cSubCard = 0;
  
                 if (numberPC != 0) {
                         updateComputerCards(p1 ,p2, p3, numberPC);
                 }
                 deleteCard(p1,p2,p3, 3 - numberPC, 1);
                 orderField(1);
+                
+                for (int i = 0; i < numberPC; i++) {
+                    submitted[cSubmitted] = "(" + stolenCard[i].getValue() + "),";
+                    cSubmitted++;               	
+                }
+                for (int i=numberPC;i < 3; i++) {
+                    String tmp =  Integer.toString(stolenCard[i].getValue());
+                    if (i==3) {
+                    	tmp = tmp + ";";
+                    } else {
+                    	tmp = tmp + ",";
+                    }
+                    submitted[cSubmitted] = tmp;
+                    cSubmitted++;                	
+                }
+                
+
         }
        
         //when stolen or computer turn;
@@ -101,6 +118,8 @@ public class Controller {
                 while (tmpCounter != pCounter) {
                         if (fieldDeck[pPlayer][x] != null) {
                                 if (fieldDeck[pPlayer][x].equals(p1) || fieldDeck[pPlayer][x].equals(p2) || fieldDeck[pPlayer][x].equals(p3)) {
+                                        stolenCard[cSubCard] = fieldDeck[pPlayer][x];
+                                        cSubCard++;
                                         fieldDeck[pPlayer][x] = null;
                                         tmpCounter++;
                                 }
@@ -113,8 +132,14 @@ public class Controller {
                 return fieldDeck;
         }
        
-        public void finish(){
-               
+        public String finish(String pPoints){
+               StringBuilder sb = new StringBuilder();
+               sb.append(player).append(";").append(pPoints).append(";[");
+               for (int i = 0; i<cSubmitted;i++) {
+            	   sb.append(submitted[i]);
+               }
+               sb.append("]").append(System.lineSeparator());
+               return sb.toString();
         }
        
         //called by startKI
@@ -143,7 +168,6 @@ public class Controller {
         public void startKI(){
                 int size = getComputerCardNumber();
                 int tmpValue;
-                int tmp = mydeck[turn-1].getValue();
                
                 for (int i = 0; i < size - 2; i++) {
                         for (int i2 = i+1; i2 < size-1; i2++) {
@@ -160,12 +184,10 @@ public class Controller {
         public Controller(){
                 player = "Player 2";
                 mydeck = new Card[52];
-                submitted = new Card[52];
+                submitted = new String[52];
                 fieldDeck = new Card[2][26];
                 cSubmitted = 0;
-                c1 = null;
-                c2 = null;
-                c3 = null;
+                stolenCard = new Card[3];
                
                 ImageIcon i1 = new ImageIcon(Card.class.getClassLoader().getResource("image/1.jpg"));
                 ImageIcon i2 = new ImageIcon(Card.class.getClassLoader().getResource("image/2.jpg"));

@@ -10,6 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
@@ -156,28 +159,25 @@ public class TwentyOne extends JFrame implements ActionListener{
 		}
 		else if (ae.getSource() == this.bEnd){
 			endTurn();
-			drawed = false;
-			bEnd.setEnabled(false);
-			bDraw.setEnabled(true);
-			clearSelection();
 		}
 		else if (ae.getSource() == this.bSubmit) {
-			if (!drawed) {
-				return;
-			}
 			submitted = false;
 			submit();
 			if (submitted) {
 				bSubmit.setEnabled(false);
 				control.removeAll();
-				actionPerformed(new ActionEvent(this.bEnd, 1, "a"));
+				endTurn();
 			} else {
 				clearSelection();
 			}
 		}
 		else if (ae.getSource() == this.bFinish) {
 			JOptionPane.showMessageDialog(frame, "Thank you very much. Your results will be saved.");
-			finish();
+			try {
+				finish();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 			initAdmin();
 		}
 		else if (ae.getSource() == this.newGame) {
@@ -199,6 +199,14 @@ public class TwentyOne extends JFrame implements ActionListener{
 		paintField();
 		paintControl();
 		frame.repaint();
+	}
+	
+	private void endTurn(){
+		endTurnCon();
+		drawed = false;
+		bEnd.setEnabled(false);
+		bDraw.setEnabled(true);
+		clearSelection();
 	}
 	
 	public void drawCard(){
@@ -231,6 +239,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 			play.add(lPicture[cPicture], c);
 			lPicture[cPicture].addMouseListener(new MouseAdapter()	{
 					public void mouseClicked(MouseEvent me){
+						if (!drawed) {
+							return;
+						}
 						JLabel tmp = (JLabel) me.getSource();
 						if (tmp.getBorder() == uborder){
 							if (cValue <= 2 ) {
@@ -245,6 +256,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 							tmp.setBorder(uborder);
 							bSubmit.setEnabled(false);
 						}
+						
 			}
 			});
 			c.gridx++;
@@ -298,11 +310,14 @@ public class TwentyOne extends JFrame implements ActionListener{
 		}
 	}
 	
-	public void finish(){
-		mycontroller.finish();
+	public void finish() throws FileNotFoundException{
+		String tmp = mycontroller.finish(lmoney.getText());
+		PrintWriter printWriter = new PrintWriter(new File("Game21_result.txt"));
+		printWriter.write(tmp);
+		printWriter.close();
 	}
 	
-	public void endTurn(){
+	public void endTurnCon(){
 		try {
 			TimeUnit.SECONDS.sleep(0);
 			drawCard();
