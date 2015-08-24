@@ -118,18 +118,38 @@ public class Controller {
 		
 	}
 	
-	public boolean calculate(){
-		//int ti = 0;
-		return false;
+	//called by startKI
+	private int checkCards(int pValue1, int pValue2, int pSize) {
+		
+		int tmpSum = fieldDeck[0][pValue1].getValue() + fieldDeck[0][pValue2].getValue();
+		
+		for (int i = Value2 + 1; i < pSize; i++) {
+			if (tmpSum + fieldDeck[0][i].getValue == 21) {
+				return i:
+			}
+		}
+		return 0;
+	
+	}
+	
+	public int getComputerCardNumber() {
+		for(int i = 0; i<26; i++) {
+    			if(fieldDeck[0][i] == null) {
+        			return i;
+    			}
+		}
 	}
 	
 	public void startKI(){
+		int size = getComputerCardNumber();
+		int tmpValue;
 		
-		if (calculate()){
-			deleteCard(c1, c2, c3, 3, 0);
-			c1 = null;
-			c2 = null;
-			c3 = null;
+		for (int i = 0; i < size - 2; i++) {
+			tmpValue = checkCards(i, i + 1, size - 2);
+			if (tmpValue != 0) {
+				updateComputerCards(fieldDeck[0][i], fieldDeck[0][i+1],fieldDeck[0][tmoValue], 3);
+				return;
+			}
 		}
 		
 	}
