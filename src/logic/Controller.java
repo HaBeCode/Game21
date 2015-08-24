@@ -53,7 +53,7 @@ public class Controller {
 		player = pPlayer;
 	}
 	
-	//do-to: which card was stolen
+	//To-Do change how to save submitted Cards
 	public void submit(Card p1, Card p2, Card p3, int numberPC){
 		submitted[cSubmitted] = p1;
 		submitted[cSubmitted + 1] = p2;
@@ -67,11 +67,13 @@ public class Controller {
 		orderField(1);
 	}
 	
+	//when stolen or computer turn;
 	private void updateComputerCards(Card p1, Card p2, Card p3, int pNumber){
 		deleteCard(p1,p2,p3, pNumber, 0);
 		orderField(0);
 	}
 	
+	//order fieldDeck from computer or player after deleting cards
 	private void orderField(int pPlayer){
 		for (int i = 0; i < 26; i++) {
 			if (fieldDeck[pPlayer][i] == null) {
@@ -82,6 +84,7 @@ public class Controller {
 		}
 	}
 	
+	//called by orderField
 	private boolean orderElement(int pPlayer, int pNew) {
 		for (int i = pNew; i < 26; i++) {
 			if (fieldDeck[pPlayer][i] != null) {
