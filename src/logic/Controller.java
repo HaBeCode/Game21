@@ -1,5 +1,7 @@
 package logic;
 
+import java.util.Arrays;
+
 import javax.swing.ImageIcon;
 import data.Card;
  
@@ -131,6 +133,10 @@ public class Controller {
         public Card[][] getFields(){
                 return fieldDeck;
         }
+        
+        public void clearFields(){
+        	Arrays.fill(fieldDeck, null);
+        }
        
         public String finish(String pPoints){
                StringBuilder sb = new StringBuilder();
@@ -189,7 +195,7 @@ public class Controller {
                 cSubmitted = 0;
                 stolenCard = new Card[3];
                
-                ImageIcon i1 = new ImageIcon(Card.class.getClassLoader().getResource("image/1.jpg"));
+                ImageIcon i1 = new ImageIcon(Card.class.getClassLoader().getResource("resource/image/1.jpg"));
                 ImageIcon i2 = new ImageIcon(Card.class.getClassLoader().getResource("image/2.jpg"));
                 ImageIcon i3 = new ImageIcon(Card.class.getClassLoader().getResource("image/3.jpg"));
                 ImageIcon i4 = new ImageIcon(Card.class.getClassLoader().getResource("image/4.jpg"));

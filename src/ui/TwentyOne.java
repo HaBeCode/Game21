@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
@@ -64,10 +65,17 @@ public class TwentyOne extends JFrame implements ActionListener{
 	public TwentyOne() {
 		
 		mycontroller = new Controller();
+		field = new Card[2][26];
+		lPicture = new JLabel[52];
+		sborder = BorderFactory.createLineBorder(Color.blue, 2);
+		uborder = BorderFactory.createLineBorder(Color.gray, 2);
+		
 		frame = new JFrame("Game 21");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 		background = new ImageIcon(Card.class.getClassLoader().getResource("image/grey-background.jpg")).getImage();
+		
+		control = new JPanel(new GridBagLayout());
 		play = new JPanel(new GridBagLayout()) {
 			@Override
 			  protected void paintComponent(Graphics g) {
@@ -75,7 +83,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 			        g.drawImage(background, 0, 0, null);
 			}
 		};
-		control = new JPanel(new GridBagLayout());
 		
 		menuBar = new JMenuBar();
 		menu = new JMenu("Menu");
@@ -103,30 +110,29 @@ public class TwentyOne extends JFrame implements ActionListener{
 		bFinish.addActionListener(this);
 		bEnd.addActionListener(this);
 
-		paintControl();
+		initGame();
 		
 		frame.add(control, BorderLayout.WEST);
-		paintPlay("Player 2");
 		frame.add(play, BorderLayout.CENTER);
-		
 		frame.setJMenuBar(menuBar);
-		//frame.setSize(new Dimension(1275, 645));
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		//frame.setResizable(false);
 		frame.setVisible(true);
-		
-		field = new Card[2][26];
-		lPicture = new JLabel[52];
+	}
+	
+	private void initGame(){
 		cPicture = 0;
 		cFieldPicture = 0;
 		cValue = 0;
 		cSteal = 0;
 		money = 0.0;
-		drawed = false;
-		submitted = false;
-		sborder = BorderFactory.createLineBorder(Color.blue, 2);
-		uborder = BorderFactory.createLineBorder(Color.gray, 2);
 		value = new Card[3];
+		
+		drawed = false;
+		submitted = false;	
+		mycontroller.clearFields();
+		Arrays.fill(lPicture, null);
+		paintControl();
+		paintPlay("Player 2");
 	}
 	
 	private static void initAdmin () {
@@ -182,6 +188,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		}
 		else if (ae.getSource() == this.newGame) {
 			
+			initGame();
 			while (mycontroller.getPlayer().equals("Player 2")) {
 				String tmp = "a";
 				tmp = (String) JOptionPane.showInputDialog("Please enter your code:");
@@ -212,7 +219,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 	public void drawCard(){
 		int tmpTurn = mycontroller.getTurn();
 		lcounter.setText("Cards left: " + (52 - tmpTurn));
-		if (tmpTurn == 51) {
+		if (tmpTurn == 52) {
 			bFinish.setEnabled(true);
 			bDraw.setEnabled(false);
 			return;
