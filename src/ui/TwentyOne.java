@@ -10,8 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +62,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 
 	public static void main(String[] args){
 		new TwentyOne();
-		//initAdmin();
 	}
 	
 	public TwentyOne() {
@@ -111,12 +113,15 @@ public class TwentyOne extends JFrame implements ActionListener{
 		bEnd.addActionListener(this);
 
 		initGame();
+		paintControl();
+		paintPlay("Player 2");
 		
 		frame.add(control, BorderLayout.WEST);
 		frame.add(play, BorderLayout.CENTER);
 		frame.setJMenuBar(menuBar);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
+
 	}
 	
 	private void initGame(){
@@ -130,36 +135,35 @@ public class TwentyOne extends JFrame implements ActionListener{
 		drawed = false;
 		submitted = false;	
 		mycontroller.clearFields();
-		Arrays.fill(lPicture, null);
-		paintControl();
-		paintPlay("Player 2");
+		lPicture = new JLabel[52];
+		bEnd.setEnabled(false);
 	}
 	
-	private static void initAdmin () {
-		String tmp = "";
-		while (!mycontroller.enterPassword(tmp)) {
-			Box box = Box.createHorizontalBox();
+	private static boolean initAdmin () {
+		
+		Box box = Box.createHorizontalBox();
 	
-			JLabel jl = new JLabel("Admin Password: ");
-			box.add(jl);
+		JLabel jl = new JLabel("Admin Password: ");
+		box.add(jl);
 	
-			JPasswordField jpf = new JPasswordField(24);
-			box.add(jpf);
+		JPasswordField jpf = new JPasswordField(24);
+		box.add(jpf);
 	
-			int button = JOptionPane.showConfirmDialog(null, box, "Enter your password", JOptionPane.OK_CANCEL_OPTION);
+		int button = JOptionPane.showConfirmDialog(null, box, "Enter your password", JOptionPane.OK_CANCEL_OPTION);
 	
-			if (button == JOptionPane.OK_OPTION) {
-			    char[] input = jpf.getPassword();
-			    tmp = new String(input);
+		if (button == JOptionPane.OK_OPTION) {
+			char[] input = jpf.getPassword();
+			if (mycontroller.enterPassword(new String(input))) {
+				return true;
 			}
 		}
+		return false;
+		
 	}
 	
 	public void actionPerformed (ActionEvent ae){
 		if (ae.getSource() == this.bDraw) {
 			drawCard();
-			bEnd.setEnabled(true);
-			bDraw.setEnabled(false);
 			clearSelection();
 			drawed=true;
 		}
@@ -171,24 +175,33 @@ public class TwentyOne extends JFrame implements ActionListener{
 			submit();
 			if (submitted) {
 				bSubmit.setEnabled(false);
-				control.removeAll();
-				endTurn();
+				if (mycontroller.getTurn()==52) {
+					try {
+						finish();
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					}
+				} else {
+					control.removeAll();
+					endTurn();
+				}
 			} else {
 				clearSelection();
 			}
 		}
 		else if (ae.getSource() == this.bFinish) {
-			JOptionPane.showMessageDialog(frame, "Thank you very much. Your results will be saved.");
 			try {
 				finish();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-			initAdmin();
 		}
 		else if (ae.getSource() == this.newGame) {
-			
+			if (!initAdmin()) {
+				return;
+			}
 			initGame();
+			lplayer.setText("Player 2");
 			while (mycontroller.getPlayer().equals("Player 2")) {
 				String tmp = "a";
 				tmp = (String) JOptionPane.showInputDialog("Please enter your code:");
@@ -222,9 +235,13 @@ public class TwentyOne extends JFrame implements ActionListener{
 		if (tmpTurn == 52) {
 			bFinish.setEnabled(true);
 			bDraw.setEnabled(false);
+			bEnd.setEnabled(false);
+			bDraw.setEnabled(false);
 			return;
 		}
 		mycontroller.draw();
+		bEnd.setEnabled(true);
+		bDraw.setEnabled(false);
 	}
 	
 	private void paintPlayerCards(final int pPlayer, int pY){
@@ -318,19 +335,20 @@ public class TwentyOne extends JFrame implements ActionListener{
 	}
 	
 	public void finish() throws FileNotFoundException{
-		String tmp = mycontroller.finish(lmoney.getText());
-		PrintWriter printWriter = new PrintWriter(new File("Game21_result.txt"));
-		printWriter.write(tmp);
-		printWriter.close();
+		
+		JOptionPane.showMessageDialog(frame, "Thank you very much. Your results will be saved.");
+		try {
+			String tmp = mycontroller.finish(lmoney.getText());
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("Game21_result.txt", true)));
+			out.println(tmp);
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void endTurnCon(){
-		try {
-			TimeUnit.SECONDS.sleep(0);
-			drawCard();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		drawCard();
 		mycontroller.startKI();
 	}
 	

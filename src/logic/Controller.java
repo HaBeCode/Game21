@@ -73,7 +73,7 @@ public class Controller {
                 }
                 for (int i=numberPC;i < 3; i++) {
                     String tmp =  Integer.toString(stolenCard[i].getValue());
-                    if (i==3) {
+                    if (i==2) {
                     	tmp = tmp + ";";
                     } else {
                     	tmp = tmp + ",";
@@ -135,7 +135,7 @@ public class Controller {
         }
         
         public void clearFields(){
-        	Arrays.fill(fieldDeck, null);
+        	fieldDeck = new Card[2][26];
         }
        
         public String finish(String pPoints){
@@ -144,7 +144,7 @@ public class Controller {
                for (int i = 0; i<cSubmitted;i++) {
             	   sb.append(submitted[i]);
                }
-               sb.append("]").append(System.lineSeparator());
+               sb.append("]");
                return sb.toString();
         }
        
@@ -174,6 +174,7 @@ public class Controller {
         public void startKI(){
                 int size = getComputerCardNumber();
                 int tmpValue;
+                cSubCard = 0;
                
                 for (int i = 0; i < size - 2; i++) {
                         for (int i2 = i+1; i2 < size-1; i2++) {
