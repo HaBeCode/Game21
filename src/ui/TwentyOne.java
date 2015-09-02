@@ -1,7 +1,6 @@
 package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -12,13 +11,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -62,7 +58,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private boolean submitted;
 	
 	private JTextArea textHistory;
-	private JScrollPane scrollPane;
 
 	public static void main(String[] args){
 		new TwentyOne();
@@ -103,7 +98,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 		textHistory = new JTextArea(8, 15);
 		textHistory.setText("Submitted Cards:");
 		textHistory.setEditable(false);
-		scrollPane = new JScrollPane(textHistory);
 		
 		lcounter = new JLabel("");
 		lmoney = new JLabel("");
