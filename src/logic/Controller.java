@@ -1,7 +1,5 @@
 package logic;
 
-import java.util.Arrays;
-
 import javax.swing.ImageIcon;
 import data.Card;
  
@@ -9,11 +7,13 @@ public class Controller {
        
         private Card[] mydeck;
         private String[] submitted;
+        private String[] pcSubmitted;
         private Card[][] fieldDeck;
         private String player;
         private int turn;
         private int cSubCard;
         private int cSubmitted;
+        private int cPcSubmitted;
         private Card[] stolenCard;
         private final static String Pass = "SMU2015";
         private String[] tmpSubmit;
@@ -161,6 +161,12 @@ public class Controller {
                for (int i = 0; i<cSubmitted;i++) {
             	   sb.append(submitted[i]);
                }
+               sb.append("]").append("\n");
+               
+               sb.append("Computer;Points;").append(";[");
+               for (int i=0; i<cPcSubmitted;i++) {
+            	   sb.append(pcSubmitted[i]);
+               }
                sb.append("]");
                return sb.toString();
         }
@@ -200,6 +206,12 @@ public class Controller {
                                 		tmpSubmit[0] = getSignOfCard(fieldDeck[0][i]);
                                 		tmpSubmit[1] = getSignOfCard(fieldDeck[0][i2]);
                                 		tmpSubmit[2] = getSignOfCard(fieldDeck[0][tmpValue]);
+                                		
+                                		pcSubmitted[cPcSubmitted] = Integer.toString(turn/2 + 1) + ":";
+                                		pcSubmitted[cPcSubmitted + 1] = tmpSubmit[0] + ",";
+                                		pcSubmitted[cPcSubmitted + 2] = tmpSubmit[1] + ",";
+                                		pcSubmitted[cPcSubmitted + 3] = tmpSubmit[2] + ";";
+                                		cPcSubmitted = cPcSubmitted + 4;
                                         updateComputerCards(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[0][tmpValue], 3);
                                         return true;
                                 }
@@ -228,9 +240,11 @@ public class Controller {
         
         public void initController(){
         	turn = 0;
+        	cPcSubmitted = 0;
             player = "Player 2";
             mydeck = new Card[52];
-            submitted = new String[69];
+            pcSubmitted = new String[34];
+            submitted = new String[76];
             fieldDeck = new Card[2][26];
             cSubmitted = 0;
             stolenCard = new Card[3];
