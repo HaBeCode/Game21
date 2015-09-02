@@ -1,6 +1,7 @@
 package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -59,6 +60,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private Card[][] field;
 	private boolean drawed;
 	private boolean submitted;
+	
+	private JTextArea textHistory;
+	private JScrollPane scrollPane;
 
 	public static void main(String[] args){
 		new TwentyOne();
@@ -96,6 +100,11 @@ public class TwentyOne extends JFrame implements ActionListener{
 		closeGame.addActionListener(this);
 		menuBar.add(menu);
 		
+		textHistory = new JTextArea(8, 15);
+		textHistory.setText("Submitted Cards:");
+		textHistory.setEditable(false);
+		scrollPane = new JScrollPane(textHistory);
+		
 		lcounter = new JLabel("");
 		lmoney = new JLabel("");
 		lDeck = new JLabel(getCard());
@@ -121,6 +130,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 		frame.setJMenuBar(menuBar);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
+		
+
 
 	}
 	
@@ -201,7 +212,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 				return;
 			}
 			initGame();
-			lplayer.setText("Player 2");
+			mycontroller.initController();
 			while (mycontroller.getPlayer().equals("Player 2")) {
 				String tmp = "a";
 				tmp = (String) JOptionPane.showInputDialog("Please enter your code:");
@@ -212,6 +223,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 			lplayer.setText(mycontroller.getPlayer());
 			drawCard();
 			bDraw.setEnabled(true);
+			bEnd.setEnabled(false);
 		}
 		else if (ae.getSource() == this.closeGame) {
 			System.exit(0);
@@ -321,7 +333,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 	
 	public void submit(){
 		int tmpValue = value[0].getValue() + value[1].getValue() + value[2].getValue();
+		
 		if (tmpValue == 21) {
+			textHistory.append("\nYou: " + mycontroller.getSignOfCard(value[0]) + ", " + mycontroller.getSignOfCard(value[1]) + ", " + mycontroller.getSignOfCard(value[2]));
 			if (cSteal == 0) {
 				money = money + 1.0;
 			} else {
@@ -338,7 +352,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		
 		JOptionPane.showMessageDialog(frame, "Thank you very much. Your results will be saved.");
 		try {
-			String tmp = mycontroller.finish(lmoney.getText());
+			String tmp = mycontroller.finish(money);
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("Game21_result.txt", true)));
 			out.println(tmp);
 			out.close();
@@ -349,7 +363,10 @@ public class TwentyOne extends JFrame implements ActionListener{
 	
 	public void endTurnCon(){
 		drawCard();
-		mycontroller.startKI();
+		if (mycontroller.startKI()) {
+			String[] tmpCards = mycontroller.getComputerSubmit();
+			textHistory.append("\nPlayer1: " + tmpCards[0] + ", " + tmpCards[1] + ", " + tmpCards[2]);
+		}
 	}
 	
 	public void paintField(){
@@ -371,6 +388,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 		c.gridy = 0;
 		lcounter.setText("Cards left: " + (52 - mycontroller.getTurn()));
 		lmoney.setText("Points: " + money);
+		
+		//scrollPane.setPreferredSize(new Dimension(200, (int)textHistory.getPreferredSize().getHeight() * 2));
 		
 
         control.add(lDeck);
@@ -394,6 +413,8 @@ public class TwentyOne extends JFrame implements ActionListener{
         control.add(lmoney, c);
         c.gridy++;
         control.add(new JLabel(" "), c);
+        c.gridy++;
+        control.add(textHistory, c);
         c.gridy++;
         control.add(new JLabel(" "), c);
         c.gridy++;
