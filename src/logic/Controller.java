@@ -157,6 +157,7 @@ public class Controller {
        
         public String finish(Double pPoints){
                StringBuilder sb = new StringBuilder();
+               sb.setLength(0);
                sb.append(player).append(";Points: ").append(pPoints).append(";[");
                for (int i = 0; i<cSubmitted;i++) {
             	   sb.append(submitted[i]);

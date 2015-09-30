@@ -136,7 +136,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		cSteal = 0;
 		money = 0.0;
 		value = new Card[3];
-		
+		textHistory.setText("");
 		drawed = false;
 		submitted = false;	
 		mycontroller.clearFields();
@@ -277,9 +277,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 							if (cValue <= 2 ) {
 								tmp.setBorder(sborder);
 								selectPicture(pPlayer, tmpX);
-								if (cValue == 3) {
-									bSubmit.setEnabled(true);
-								}
 							}
 						} else {
 							deselectPicture(pPlayer, tmpX);
@@ -296,15 +293,25 @@ public class TwentyOne extends JFrame implements ActionListener{
 	}
 	
 	private void selectPicture(final int pPlayer, final int pX){
-		value[cValue] = field[pPlayer][pX];
-		cValue++;
-		if (pPlayer==0) {
-			cSteal++;
+		
+		for (int i = 0; i < 3; i++) {
+			if (value[i] == null){
+				value[i] = field[pPlayer][pX];		
+				cValue++;
+				if (cValue ==3) {
+					bSubmit.setEnabled(true);
+				}
+				if (pPlayer==0) {
+					cSteal++;
+				}
+				return;
+			}
 		}
+
 	}
 	
 	private void deselectPicture(final int pPlayer, final int pX) {
-		for (int i = 0; i< 2; i++) {
+		for (int i = 0; i < 3; i++) {
 			if (value[i] != null) {
 				if (value[i].equals(field[pPlayer][pX])) {
 					value[i] = null;
@@ -353,6 +360,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		bFinish.setEnabled(false);
+		bDraw.setEnabled(false);
+		bEnd.setEnabled(false);
 	}
 	
 	public void endTurnCon(){
