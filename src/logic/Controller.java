@@ -17,6 +17,7 @@ public class Controller {
         private Card[] stolenCard;
         private final static String Pass = "SMU2015";
         private String[] tmpSubmit;
+        private Double ComPoints;
         
         ImageIcon i1;
         ImageIcon i2;
@@ -227,14 +228,21 @@ public class Controller {
                             pcSubmitted[cPcSubmitted] = Integer.toString(turn/2 + 1) + ":";
                             pcSubmitted[cPcSubmitted + 1] = tmpSubmit[0] + ",";
                             pcSubmitted[cPcSubmitted + 2] = tmpSubmit[1] + ",";
-                            pcSubmitted[cPcSubmitted + 3] = tmpSubmit[2] + ";";
+                            if (tmpIndex == 0)
+                            	pcSubmitted[cPcSubmitted + 3] = tmpSubmit[2] + ";";
+                            else
+                            	pcSubmitted[cPcSubmitted + 3] = "(" + tmpSubmit[2] + ");";
                             cPcSubmitted = cPcSubmitted + 4;
                             
                             if(tmpIndex == 0) {
                             	updateComputerCards(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[0][tmpValue], 2);
+                            	ComPoints += 1.0;
                             } else {
-                            	//updateComputerCards
-                            	//updateComputerCards(p1, p2, p3, pNumber);
+                            	deleteCard(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[1][tmpValue],2,0);
+                            	deleteCard(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[1][tmpValue],1,1);
+                            	orderField(0);
+                            	orderField(1);
+                            	ComPoints += 0.5;
                             }
                             return true;
                         }
@@ -263,9 +271,10 @@ public class Controller {
         public void initController(){
         	turn = 0;
         	cPcSubmitted = 0;
+        	ComPoints = 0.0;
             player = "Player 2";
             mydeck = new Card[52];
-            pcSubmitted = new String[34];
+            pcSubmitted = new String[76];
             submitted = new String[76];
             fieldDeck = new Card[2][26];
             cSubmitted = 0;
