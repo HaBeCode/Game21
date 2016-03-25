@@ -1,6 +1,8 @@
 package logic;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+
 import data.Card;
  
 public class Controller {
@@ -165,7 +167,7 @@ public class Controller {
                }
                sb.append("]").append("\n");
                
-               sb.append("Computer;Points;").append(";[");
+               sb.append("Computer;Points: " + ComPoints).append(";[");
                for (int i=0; i<cPcSubmitted;i++) {
             	   sb.append(pcSubmitted[i]);
                }
@@ -210,6 +212,7 @@ public class Controller {
                 int size = getCardNumber(0);
                 int tmpValue;
                 cSubCard = 0;
+                int dialogResult = 0;
                
                 for (int i = 0; i < size - 2; i++) {
                 	for (int i2 = i+1; i2 < size-1; i2++) {
@@ -217,8 +220,12 @@ public class Controller {
                 		tmpValue = checkCards(i, i2, size);
                         if (tmpValue == 0) {
                         	tmpValue = checkPlayerCards(i, i2);
-                        	if(tmpValue != 0)
+                        	if(tmpValue != 0) {
                         		tmpIndex = 1;
+                        	   	dialogResult = JOptionPane.showConfirmDialog (null, "Do you allow Player 1 do take your card " + getSignOfCard(fieldDeck[tmpIndex][tmpValue]) + " ?","Warning", JOptionPane.YES_NO_OPTION);
+                        	   	if(dialogResult == JOptionPane.NO_OPTION)
+                        	   		return false;
+                        	}
                         }
                         if (tmpValue != 0) {
                         	tmpSubmit[0] = getSignOfCard(fieldDeck[0][i]);
