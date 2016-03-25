@@ -174,21 +174,31 @@ public class Controller {
        
         //called by startKI
         private int checkCards(int pValue1, int pValue2, int pSize) {
-               
-                int tmpSum = fieldDeck[0][pValue1].getValue() + fieldDeck[0][pValue2].getValue();
-               
-                for (int i = pValue2+1; i < pSize; i++) {
-                	if (tmpSum + fieldDeck[0][i].getValue() == 21) {
-                		return i;
-                	}
+        	int tmpSum = fieldDeck[0][pValue1].getValue() + fieldDeck[0][pValue2].getValue();
+            for (int i = pValue2+1; i < pSize; i++) {
+            	if (tmpSum + fieldDeck[0][i].getValue() == 21) {
+            		return i;
                 }
-                return 0;
-       
+            }
+            return 0;
+        }
+        
+        private int checkPlayerCards(int pValue1, int pValue2) {
+        	
+        	int tmpSum = fieldDeck[0][pValue1].getValue() + fieldDeck[0][pValue2].getValue();
+        	int tmpSize = getCardNumber(1);
+        	
+            for (int i = 0; i < tmpSize;i++) {
+            	if (tmpSum + fieldDeck[1][i].getValue() == 21) {
+            		return i;
+            	}
+            }
+            return 0;
         }
        
-        public int getComputerCardNumber() {
+        public int getCardNumber(int index) {
                 for(int i = 0; i<26; i++) {
-                         if(fieldDeck[0][i] == null) {
+                         if(fieldDeck[index][i] == null) {
                          return i;
                          }
                 }
@@ -196,28 +206,39 @@ public class Controller {
         }
        
         public boolean startKI(){
-                int size = getComputerCardNumber();
+                int size = getCardNumber(0);
                 int tmpValue;
                 cSubCard = 0;
                
                 for (int i = 0; i < size - 2; i++) {
-                        for (int i2 = i+1; i2 < size-1; i2++) {
-                                tmpValue = checkCards(i, i2, size);
-                                if (tmpValue != 0) {
-                                		tmpSubmit[0] = getSignOfCard(fieldDeck[0][i]);
-                                		tmpSubmit[1] = getSignOfCard(fieldDeck[0][i2]);
-                                		tmpSubmit[2] = getSignOfCard(fieldDeck[0][tmpValue]);
-                                		
-                                		pcSubmitted[cPcSubmitted] = Integer.toString(turn/2 + 1) + ":";
-                                		pcSubmitted[cPcSubmitted + 1] = tmpSubmit[0] + ",";
-                                		pcSubmitted[cPcSubmitted + 2] = tmpSubmit[1] + ",";
-                                		pcSubmitted[cPcSubmitted + 3] = tmpSubmit[2] + ";";
-                                		cPcSubmitted = cPcSubmitted + 4;
-                                        updateComputerCards(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[0][tmpValue], 3);
-                                        return true;
-                                }
+                	for (int i2 = i+1; i2 < size-1; i2++) {
+                		int tmpIndex = 0;
+                		tmpValue = checkCards(i, i2, size);
+                        if (tmpValue == 0) {
+                        	tmpValue = checkPlayerCards(i, i2);
+                        	if(tmpValue != 0)
+                        		tmpIndex = 1;
                         }
-                       
+                        if (tmpValue != 0) {
+                        	tmpSubmit[0] = getSignOfCard(fieldDeck[0][i]);
+                            tmpSubmit[1] = getSignOfCard(fieldDeck[0][i2]);
+                            tmpSubmit[2] = getSignOfCard(fieldDeck[tmpIndex][tmpValue]);
+                                		
+                            pcSubmitted[cPcSubmitted] = Integer.toString(turn/2 + 1) + ":";
+                            pcSubmitted[cPcSubmitted + 1] = tmpSubmit[0] + ",";
+                            pcSubmitted[cPcSubmitted + 2] = tmpSubmit[1] + ",";
+                            pcSubmitted[cPcSubmitted + 3] = tmpSubmit[2] + ";";
+                            cPcSubmitted = cPcSubmitted + 4;
+                            
+                            if(tmpIndex == 0) {
+                            	updateComputerCards(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[0][tmpValue], 2);
+                            } else {
+                            	//updateComputerCards
+                            	//updateComputerCards(p1, p2, p3, pNumber);
+                            }
+                            return true;
+                        }
+                	}
                 }
                 return false;
         }
