@@ -1,6 +1,7 @@
 package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -22,6 +23,8 @@ import javax.swing.border.Border;
 import data.Card;
 import logic.Controller;
 
+
+//JProgressbar
 public class TwentyOne extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
@@ -33,6 +36,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private JMenuItem newGame;
 	private JMenuItem closeGame;
 	private Image background;
+	private JProgressBar pbar;
 
 	private JLabel lcounter;
 	private JLabel lplayer;
@@ -102,6 +106,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 		lcounter = new JLabel("");
 		lmoney = new JLabel("");
 		lDeck = new JLabel(getCard());
+		pbar = new JProgressBar();
+		pbar.setMinimumSize(new Dimension(800,200));
+		pbar.setPreferredSize(new Dimension(800,200));
 		bDraw = new JButton("Draw");
 		bSubmit = new JButton("Submit");
 		bFinish = new JButton("Finish");
@@ -125,8 +132,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
 		
-
-
 	}
 	
 	private void initGame(){
@@ -171,6 +176,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 			drawCard();
 			clearSelection();
 			drawed=true;
+			bEnd.setEnabled(true);
 		}
 		else if (ae.getSource() == this.bEnd){
 			endTurn();
@@ -228,11 +234,39 @@ public class TwentyOne extends JFrame implements ActionListener{
 	}
 	
 	private void endTurn(){
-		endTurnCon();
-		drawed = false;
+
 		bEnd.setEnabled(false);
-		bDraw.setEnabled(true);
-		clearSelection();
+		pbar.setIndeterminate(true);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				
+				try {
+					Thread.sleep(1500);
+					drawCard();
+					paintField();
+					frame.repaint();
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				if (mycontroller.startKI()) {
+					String[] tmpCards = mycontroller.getComputerSubmit();
+					textHistory.append("\nPlayer1: " + tmpCards[0] + ", " + tmpCards[1] + ", " + tmpCards[2]);
+				}
+				
+				drawed = false;
+				bDraw.setEnabled(true);
+				clearSelection();
+				
+				paintField();
+				paintControl();
+				frame.repaint();
+				pbar.setIndeterminate(false);
+			}
+		}).start();
+		
 	}
 	
 	public void drawCard(){
@@ -246,7 +280,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 			return;
 		}
 		mycontroller.draw();
-		bEnd.setEnabled(true);
 		bDraw.setEnabled(false);
 	}
 	
@@ -254,7 +287,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		GridBagConstraints c = new GridBagConstraints();
 		
 		c.gridx = 2;
-		c.gridy = pY;
+		c.gridy = pY + 1;
 		for (int x = 0; x < 26; x++) {
 			if (field[pPlayer][x] == null) {
 				continue;
@@ -365,14 +398,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 		bEnd.setEnabled(false);
 	}
 	
-	public void endTurnCon(){
-		drawCard();
-		if (mycontroller.startKI()) {
-			String[] tmpCards = mycontroller.getComputerSubmit();
-			textHistory.append("\nPlayer1: " + tmpCards[0] + ", " + tmpCards[1] + ", " + tmpCards[2]);
-		}
-	}
-	
 	public void paintField(){
 		play.removeAll();
 		cPicture = 0;
@@ -393,15 +418,18 @@ public class TwentyOne extends JFrame implements ActionListener{
 		lcounter.setText("Cards left: " + (52 - mycontroller.getTurn()));
 		lmoney.setText("Points: " + money);
 		
-		//scrollPane.setPreferredSize(new Dimension(200, (int)textHistory.getPreferredSize().getHeight() * 2));
-		
-
         control.add(lDeck);
         c.gridy++;
         control.add(lcounter,c);
         c.gridy++;
         control.add(new JLabel(" "), c);
         c.gridy++;
+        /*
+        control.add(pbar, c);
+        c.gridy++;
+        control.add(new JLabel(" "), c);
+        c.gridy++;
+        */
         control.add(bDraw, c);
         c.gridy++;
         control.add(new JLabel(" "), c);
@@ -428,8 +456,14 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private void paintPlay(String pPlayer) {
 		
 		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
+		
 		c.gridy = 0;
+		c.gridx = 0;
+		play.add(new JLabel(" "), c);
+		c.gridx++;
+		play.add(pbar, c);
+		c.gridx = 0;
+		c.gridy++;
 		
 		JLabel lcomputer = new JLabel("Player 1");
 		lplayer = new JLabel(pPlayer);
