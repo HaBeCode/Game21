@@ -107,8 +107,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 		lmoney = new JLabel("");
 		lDeck = new JLabel(getCard());
 		pbar = new JProgressBar();
-		pbar.setMinimumSize(new Dimension(800,200));
-		pbar.setPreferredSize(new Dimension(800,200));
+		pbar.setMinimumSize(new Dimension(400,200));
+		pbar.setPreferredSize(new Dimension(400,200));
 		bDraw = new JButton("Draw");
 		bSubmit = new JButton("Submit");
 		bFinish = new JButton("Finish");
@@ -424,12 +424,6 @@ public class TwentyOne extends JFrame implements ActionListener{
         c.gridy++;
         control.add(new JLabel(" "), c);
         c.gridy++;
-        /*
-        control.add(pbar, c);
-        c.gridy++;
-        control.add(new JLabel(" "), c);
-        c.gridy++;
-        */
         control.add(bDraw, c);
         c.gridy++;
         control.add(new JLabel(" "), c);
@@ -459,11 +453,12 @@ public class TwentyOne extends JFrame implements ActionListener{
 		
 		c.gridy = 0;
 		c.gridx = 0;
-		play.add(new JLabel(" "), c);
-		c.gridx++;
+		//play.add(new JLabel(" "), c);
+		//c.gridx++;
 		play.add(pbar, c);
+		
 		c.gridx = 0;
-		c.gridy++;
+		c.gridy = 1;
 		
 		JLabel lcomputer = new JLabel("Player 1");
 		lplayer = new JLabel(pPlayer);
