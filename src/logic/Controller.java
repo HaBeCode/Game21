@@ -186,17 +186,32 @@ public class Controller {
             return 0;
         }
         
-        private int checkPlayerCards(int pValue1, int pValue2) {
+        private int checkPlayerCards(int pValue1) {
         	
-        	int tmpSum = fieldDeck[0][pValue1].getValue() + fieldDeck[0][pValue2].getValue();
         	int tmpSize = getCardNumber(1);
         	
             for (int i = 0; i < tmpSize;i++) {
-            	if (tmpSum + fieldDeck[1][i].getValue() == 21) {
+            	if (pValue1 + fieldDeck[1][i].getValue() == 21) {
             		return i;
             	}
             }
             return 0;
+        }
+        
+        private int[] check2PlayerCards(int pValue1) {
+        	int[] cards = new int[2];
+        	int tmpSize = getCardNumber(1);
+        	for (int i = 0; i < tmpSize; i++){
+        		for (int j = i+1; j < tmpSize; j++){
+        			if (pValue1 + fieldDeck[1][i].getValue() + fieldDeck[1][j].getValue() == 21){
+        				cards[0] = i;
+        				cards[1] = j;
+        				return cards;
+        			}
+        		}
+        	}
+        	cards[0] = -1;
+        	return cards;
         }
        
         public int getCardNumber(int index) {
@@ -209,55 +224,88 @@ public class Controller {
         }
        
         public boolean startKI(){
-                int size = getCardNumber(0);
-                int tmpValue;
-                cSubCard = 0;
-                int dialogResult = 0;
-               
-                for (int i = 0; i < size - 2; i++) {
-                	for (int i2 = i+1; i2 < size-1; i2++) {
-                		int tmpIndex = 0;
-                		tmpValue = checkCards(i, i2, size);
-                        if (tmpValue == 0) {
-                        	tmpValue = checkPlayerCards(i, i2);
-                        	if(tmpValue != 0) {
-                        		tmpIndex = 1;
-                        	   	dialogResult = JOptionPane.showConfirmDialog (null, "Do you allow Player 1 do take your card " + getSignOfCard(fieldDeck[tmpIndex][tmpValue]) + " ?","Warning", JOptionPane.YES_NO_OPTION);
-                        	   	if(dialogResult == JOptionPane.NO_OPTION)
-                        	   		return false;
-                        	}
-                        }
-                        if (tmpValue != 0) {
-                        	tmpSubmit[0] = getSignOfCard(fieldDeck[0][i]);
-                            tmpSubmit[1] = getSignOfCard(fieldDeck[0][i2]);
-                            tmpSubmit[2] = getSignOfCard(fieldDeck[tmpIndex][tmpValue]);
-                                		
-                            pcSubmitted[cPcSubmitted] = Integer.toString(turn/2 + 1) + ":";
-                            pcSubmitted[cPcSubmitted + 1] = tmpSubmit[0] + ",";
-                            pcSubmitted[cPcSubmitted + 2] = tmpSubmit[1] + ",";
-                            if (tmpIndex == 0)
-                            	pcSubmitted[cPcSubmitted + 3] = tmpSubmit[2] + ";";
-                            else
-                            	pcSubmitted[cPcSubmitted + 3] = "(" + tmpSubmit[2] + ");";
-                            cPcSubmitted = cPcSubmitted + 4;
-                            
-                            if(tmpIndex == 0) {
-                            	updateComputerCards(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[0][tmpValue], 2);
-                            	ComPoints += 1.0;
-                            } else {
-                            	deleteCard(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[1][tmpValue],2,0);
-                            	deleteCard(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[1][tmpValue],1,1);
-                            	orderField(0);
-                            	orderField(1);
-                            	ComPoints += 0.5;
-                            }
-                            return true;
-                        }
-                	}
-                }
-                return false;
+            int size = getCardNumber(0);
+            int tmpValue;
+            cSubCard = 0;
+            int dialogResult = 0;
+            int[] playerCards = new int[2];
+            
+            for (int tIndex = 0; tIndex < 3; tIndex++) {
+	        	if (tIndex == 0){
+	                for (int i = 0; i < size - 2; i++) {
+	                	for (int i2 = i+1; i2 < size-1; i2++) {
+	                		tmpValue = checkCards(i, i2, size);
+	                		if (tmpValue != 0) {
+	                			writeCards(0, i, 0, i2, 0, tmpValue);
+	                			updateComputerCards(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[0][tmpValue], 2);
+	                			ComPoints += 1.0;
+	                			return true;
+	                		}
+	                	}
+	                }
+	        	} else if (tIndex == 1){
+	                for (int i = 0; i < size - 2; i++) {
+	                	for (int i2 = i+1; i2 < size-1; i2++) {
+	                		tmpValue = checkPlayerCards(fieldDeck[0][i].getValue() + fieldDeck[0][i2].getValue());
+	                    	if(tmpValue != 0) {
+	                    	   	dialogResult = JOptionPane.showConfirmDialog (null, "Do you allow Player 1 to take your card " + getSignOfCard(fieldDeck[1][tmpValue]) + " ?","Warning", JOptionPane.YES_NO_OPTION);
+	                    	   	if(dialogResult == JOptionPane.NO_OPTION)
+	                    	   		return false;
+	                    	   	else {
+	                    	   		writeCards(0, i, 0, i2, 1, tmpValue);
+	                            	deleteCard(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[1][tmpValue],2,0);
+	                            	deleteCard(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[1][tmpValue],1,1);
+	                            	orderField(0);
+	                            	orderField(1);
+	                    	   		ComPoints += 0.5;
+	                    	   		return true;
+	                    	   	}
+	                    	}
+	                	}
+	                }
+	        	} else if (tIndex == 2){
+	                for (int i = 0; i < size - 2; i++) {
+	                	playerCards = check2PlayerCards(fieldDeck[0][i].getValue());
+	                	if (playerCards[0] != -1){
+	                	   	dialogResult = JOptionPane.showConfirmDialog (null, "Do you allow Player 1 to take your card " + getSignOfCard(fieldDeck[1][playerCards[0]]) + " and " + getSignOfCard(fieldDeck[1][playerCards[1]]) + " ?","Warning", JOptionPane.YES_NO_OPTION);
+	                	   	if(dialogResult == JOptionPane.NO_OPTION)
+	                	   		return false;
+	                	   	else {
+	                	   		writeCards(0, i, 1, playerCards[0], 1, playerCards[1]);
+	                        	deleteCard(fieldDeck[0][i], fieldDeck[1][playerCards[0]],fieldDeck[1][playerCards[1]],1,0);
+	                        	deleteCard(fieldDeck[0][i], fieldDeck[1][playerCards[0]],fieldDeck[1][playerCards[1]],2,1);
+	                        	orderField(0);
+	                        	orderField(1);
+	                        	orderField(0);
+	                        	orderField(1);
+	                	   		ComPoints += 0.5;
+	                	   		return true;
+	                	   	}
+	                	} 
+	                } 
+	        	}
+            }
+        	return false;
         }
-        
+        private void writeCards(int x0, int y0, int x1, int y1, int x2, int y2){
+        	
+        	tmpSubmit[0] = getSignOfCard(fieldDeck[x0][y0]);
+            tmpSubmit[1] = getSignOfCard(fieldDeck[x1][y1]);
+            tmpSubmit[2] = getSignOfCard(fieldDeck[x2][y2]);
+                		
+            pcSubmitted[cPcSubmitted] = Integer.toString(turn/2 + 1) + ":";
+            pcSubmitted[cPcSubmitted + 1] = tmpSubmit[0] + ",";
+            if (x1 == 0)
+            	pcSubmitted[cPcSubmitted + 2] = tmpSubmit[1] + ",";
+            else
+            	pcSubmitted[cPcSubmitted + 2] = "(" + tmpSubmit[1] + "),";
+            if (x2 == 0)
+            	pcSubmitted[cPcSubmitted + 3] = tmpSubmit[2] + ";";
+            else
+            	pcSubmitted[cPcSubmitted + 3] = "(" + tmpSubmit[2] + ");";
+            cPcSubmitted = cPcSubmitted + 4;
+        }
+            	
         public String[] getComputerSubmit(){
         	return tmpSubmit;
         }
