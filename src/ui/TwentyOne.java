@@ -41,6 +41,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private JLabel lcounter;
 	private JLabel lplayer;
 	private JLabel lmoney;
+	private JLabel lpcmoney;
 	private JLabel lDeck;
 	private JLabel[] lPicture;
 	private double money;
@@ -100,11 +101,12 @@ public class TwentyOne extends JFrame implements ActionListener{
 		menuBar.add(menu);
 		
 		textHistory = new JTextArea(8, 15);
-		textHistory.setText("Submitted Cards:");
+		textHistory.setText("Card Submission History:");
 		textHistory.setEditable(false);
 		
 		lcounter = new JLabel("");
 		lmoney = new JLabel("");
+		lpcmoney = new JLabel("");
 		lDeck = new JLabel(getCard());
 		pbar = new JProgressBar();
 		pbar.setMinimumSize(new Dimension(400,200));
@@ -112,7 +114,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 		bDraw = new JButton("Draw");
 		bSubmit = new JButton("Submit");
 		bFinish = new JButton("Finish");
-		bEnd = new JButton("End turn");
+		bEnd = new JButton("Pass");
 		bDraw.setEnabled(false);
 		bSubmit.setEnabled(false);
 		bFinish.setEnabled(false);
@@ -384,7 +386,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 	
 	public void finish() throws FileNotFoundException{
 		
-		JOptionPane.showMessageDialog(frame, "Thank you very much. Your results will be saved.");
+		JOptionPane.showMessageDialog(frame, "There are no cards left. The game has ended."
+				+ "\nPlease alert the experimenter!\nYour result of " + money + " points"
+											+ " will be saved.");
 		try {
 			String tmp = mycontroller.finish(money);
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("Game21_result.txt", true)));
@@ -416,7 +420,8 @@ public class TwentyOne extends JFrame implements ActionListener{
 		c.gridx = 0;
 		c.gridy = 0;
 		lcounter.setText("Cards left: " + (52 - mycontroller.getTurn()));
-		lmoney.setText("Points: " + money);
+		lmoney.setText("Your points: " + money);
+		lpcmoney.setText("Other points: " + mycontroller.getComPoints());
 		
         control.add(lDeck);
         c.gridy++;
@@ -440,6 +445,10 @@ public class TwentyOne extends JFrame implements ActionListener{
         c.gridy++;
         control.add(new JLabel(" "), c);
         c.gridy++;
+        control.add(lpcmoney, c);
+        c.gridy++;
+        control.add(new JLabel(" "), c);
+        c.gridy++;
         control.add(textHistory, c);
         c.gridy++;
         control.add(new JLabel(" "), c);
@@ -453,15 +462,13 @@ public class TwentyOne extends JFrame implements ActionListener{
 		
 		c.gridy = 0;
 		c.gridx = 0;
-		//play.add(new JLabel(" "), c);
-		//c.gridx++;
 		play.add(pbar, c);
 		
 		c.gridx = 0;
 		c.gridy = 1;
 		
-		JLabel lcomputer = new JLabel("Player 1");
-		lplayer = new JLabel(pPlayer);
+		JLabel lcomputer = new JLabel("Other");
+		lplayer = new JLabel("You");
 		lcomputer.setForeground(Color.WHITE);
 		lplayer.setForeground(Color.WHITE);
 		lcomputer.setFont(new Font("Arial", Font.PLAIN, 20));
