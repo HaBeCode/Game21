@@ -82,7 +82,9 @@ public class TwentyOne extends JFrame implements ActionListener{
 		background = new ImageIcon(Card.class.getClassLoader().getResource("image/grey-background.jpg")).getImage();
 		
 		control = new JPanel(new GridBagLayout());
-		play = new JPanel(new GridBagLayout()) {
+		play = new JPanel(new GridBagLayout());
+		
+		JPanel playLayout = new JPanel(new BorderLayout()) {
 			@Override
 			  protected void paintComponent(Graphics g) {
 			    super.paintComponent(g);
@@ -126,10 +128,32 @@ public class TwentyOne extends JFrame implements ActionListener{
 
 		initGame();
 		paintControl();
-		paintPlay("Player 2");
+		
+		JLabel lcomputer = new JLabel("Other");
+		lplayer = new JLabel("You");
+		lcomputer.setForeground(Color.WHITE);
+		lplayer.setForeground(Color.WHITE);
+		lcomputer.setFont(new Font("Arial", Font.PLAIN, 20));
+		lplayer.setFont(new Font("Arial", Font.PLAIN, 20));
+		
+		JPanel layoutLabelPlayer = new JPanel(new GridBagLayout());
+		GridBagConstraints tmpc = new GridBagConstraints();
+		tmpc.gridx = 0;
+		tmpc.gridy = 0;
+		
+		layoutLabelPlayer.add(lcomputer, tmpc);
+		tmpc.gridy = 1;
+		layoutLabelPlayer.add(new JLabel(" "), tmpc);
+		tmpc.gridy= 2;
+		layoutLabelPlayer.add(lplayer, tmpc);
+		
+		playLayout.add(layoutLabelPlayer, BorderLayout.WEST);
+		playLayout.add(pbar, BorderLayout.NORTH);
+		
+		playLayout.add(play, BorderLayout.CENTER);
 		
 		frame.add(control, BorderLayout.WEST);
-		frame.add(play, BorderLayout.CENTER);
+		frame.add(playLayout, BorderLayout.CENTER);
 		frame.setJMenuBar(menuBar);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
@@ -222,7 +246,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 					mycontroller.setPlayer(tmp);
 				} 
 			}
-			lplayer.setText(mycontroller.getPlayer());
 			drawCard();
 			bDraw.setEnabled(true);
 			bEnd.setEnabled(false);
@@ -288,8 +311,10 @@ public class TwentyOne extends JFrame implements ActionListener{
 	private void paintPlayerCards(final int pPlayer, int pY){
 		GridBagConstraints c = new GridBagConstraints();
 		
-		c.gridx = 2;
-		c.gridy = pY + 1;
+		c.gridx = 0;
+		c.gridy = 2;
+		play.add(new JLabel(" "), c);
+		c.gridy = pY;
 		for (int x = 0; x < 26; x++) {
 			if (field[pPlayer][x] == null) {
 				continue;
@@ -298,8 +323,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 			lPicture[cPicture] = new JLabel(field[pPlayer][x].getPicture());
 			lPicture[cPicture].setBorder(uborder);
 			if (cFieldPicture == 10) {
-				c.gridy = pY + 1;
-				c.gridx = 2;
+				c.gridy = pY +1;
 			}
 			play.add(lPicture[cPicture], c);
 			lPicture[cPicture].addMouseListener(new MouseAdapter()	{
@@ -324,6 +348,10 @@ public class TwentyOne extends JFrame implements ActionListener{
 			c.gridx++;
 			cPicture++;
 			cFieldPicture++;
+		}
+		for (int x= c.gridx; x<10; x++){
+			play.add(new JLabel(Integer.toString(x)), c);
+			c.gridx++;
 		}
 	}
 	
@@ -407,7 +435,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 		cPicture = 0;
 		cFieldPicture = 0;
 		field = mycontroller.getFields();
-		paintPlay(mycontroller.getPlayer());
 		paintPlayerCards(0,0);
 		cFieldPicture = 0;
 		paintPlayerCards(1,3);
@@ -449,47 +476,13 @@ public class TwentyOne extends JFrame implements ActionListener{
         c.gridy++;
         control.add(new JLabel(" "), c);
         c.gridy++;
+        control.add(new JLabel("Card Submission History"), c);
+        c.gridy++;
         control.add(textHistory, c);
         c.gridy++;
         control.add(new JLabel(" "), c);
         c.gridy++;
         control.add(bFinish, c);
-	}
-
-	private void paintPlay(String pPlayer) {
-		
-		GridBagConstraints c = new GridBagConstraints();
-		
-		c.gridy = 0;
-		c.gridx = 0;
-		play.add(pbar, c);
-		
-		c.gridx = 0;
-		c.gridy = 1;
-		
-		JLabel lcomputer = new JLabel("Other");
-		lplayer = new JLabel("You");
-		lcomputer.setForeground(Color.WHITE);
-		lplayer.setForeground(Color.WHITE);
-		lcomputer.setFont(new Font("Arial", Font.PLAIN, 20));
-		lplayer.setFont(new Font("Arial", Font.PLAIN, 20));
-		
-        play.add(lcomputer, c);
-        c.gridy++;
-        play.add(new JLabel(" "), c);
-        c.gridy++;
-        play.add(new JLabel(" "), c);
-        c.gridy++;
-        play.add(lplayer, c);
-        c.gridy++;
-        play.add(new JLabel(" "), c);
-        c.gridx++;
-        c.gridy = 0;
-        play.add(new JLabel(" "), c);
-        c.gridy++;
-        play.add(new JLabel(" "), c);
-        c.gridy++;
-        play.add(new JLabel(" "), c);
 	}
 
 	private ImageIcon getCard(){
