@@ -236,7 +236,7 @@ public class Controller {
 	                		tmpValue = checkCards(i, i2, size);
 	                		if (tmpValue != 0) {
 	                			writeCards(0, i, 0, i2, 0, tmpValue);
-	                			updateComputerCards(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[0][tmpValue], 2);
+	                			updateComputerCards(fieldDeck[0][i], fieldDeck[0][i2],fieldDeck[0][tmpValue], 3);
 	                			ComPoints += 1.0;
 	                			return true;
 	                		}

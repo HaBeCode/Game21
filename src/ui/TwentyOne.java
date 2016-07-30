@@ -3,7 +3,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -19,13 +18,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JProgressBar;
+import javax.swing.JTextArea;
 import javax.swing.border.Border;
 
-import com.sun.corba.se.spi.ior.Writeable;
-
 import data.Card;
-import javafx.scene.image.WritableImage;
 import logic.Controller;
 
 
@@ -89,23 +98,32 @@ public class TwentyOne extends JFrame implements ActionListener{
 		background = new ImageIcon(Card.class.getClassLoader().getResource("image/grey_background.jpg")).getImage();
 		blackb = new ImageIcon(Card.class.getClassLoader().getResource("image/blackb.jpg")).getImage();
 		
-		control = new JPanel(new GridBagLayout());
-		play = new JPanel(new GridBagLayout()){
+		control = new JPanel(new GridBagLayout()){
+			private static final long serialVersionUID = 5L;
+
 			@Override
 			  protected void paintComponent(Graphics g) {
-			    //super.paintComponent(g);
+			    g.drawImage(blackb, 0, 0, null);
+			};
+		};
+		
+		play = new JPanel(new GridBagLayout()){
+			private static final long serialVersionUID = 4L;
+
+			@Override
+			  protected void paintComponent(Graphics g) {
 			    g.drawImage(background, 0, 0, null);
 			};
 		};
 		
 		JPanel playLayout = new JPanel(new BorderLayout()) {
+			private static final long serialVersionUID = 2L;
+
 			@Override
 			  protected void paintComponent(Graphics g) {
-			    //super.paintComponent(g);
 			    g.drawImage(blackb, 0, 0, null);
 			}
 		};
-		//JPanel playLayout = new JPanel(new BorderLayout());
 		
 		menuBar = new JMenuBar();
 		menu = new JMenu("Menu");
@@ -122,8 +140,11 @@ public class TwentyOne extends JFrame implements ActionListener{
 		textHistory.setEditable(false);
 		
 		lcounter = new JLabel("");
+		lcounter.setForeground(Color.WHITE);
 		lmoney = new JLabel("");
+		lmoney.setForeground(Color.WHITE);
 		lpcmoney = new JLabel("");
+		lpcmoney.setForeground(Color.WHITE);
 		lDeck = new JLabel(getCard());
 		pbar = new JProgressBar();
 		pbar.setMinimumSize(new Dimension(400,200));
@@ -152,9 +173,10 @@ public class TwentyOne extends JFrame implements ActionListener{
 		lplayer.setFont(new Font("Arial", Font.PLAIN, 20));
 		
 		JPanel layoutLabelPlayer = new JPanel(new GridBagLayout()) {
+			private static final long serialVersionUID = 3L;
+
 			@Override
 			  protected void paintComponent(Graphics g) {
-			    //super.paintComponent(g);
 			    g.drawImage(blackb, 0, 0, null);
 			}
 		};;
@@ -168,7 +190,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 		tmpc.gridy= 2;
 		layoutLabelPlayer.add(lplayer, tmpc);
 		
-	
 		playLayout.add(layoutLabelPlayer, BorderLayout.WEST);
 		playLayout.add(pbar, BorderLayout.NORTH);
 		
@@ -179,7 +200,6 @@ public class TwentyOne extends JFrame implements ActionListener{
 		frame.setJMenuBar(menuBar);
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
-		
 	}
 	
 	private void initGame(){
@@ -246,6 +266,7 @@ public class TwentyOne extends JFrame implements ActionListener{
 				}
 			} else {
 				clearSelection();
+				bSubmit.setEnabled(false);
 			}
 		}
 		else if (ae.getSource() == this.bFinish) {
