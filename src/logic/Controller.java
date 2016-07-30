@@ -39,9 +39,9 @@ public class Controller {
         public void draw(){                    
                 int ti;
                 if (turn%2==0){
-                        ti = 0;
-                } else {
                         ti = 1;
+                } else {
+                        ti = 0;
                 }
                 addCard(ti, mydeck[turn]);
                 turn++;
@@ -72,7 +72,6 @@ public class Controller {
                 player = pPlayer;
         }
        
-        //To-Do change how to save submitted Cards
         public void submit(Card p1, Card p2, Card p3, int numberPC){
 
                 stolenCard[0] = null;
